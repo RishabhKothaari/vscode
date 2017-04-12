@@ -59,22 +59,19 @@ export class MDDocumentContentProvider implements vscode.TextDocumentContentProv
 		return vscode.Uri.file(this.context.asAbsolutePath(path.join('media', mediaFile))).toString();
 	}
 
-	private isAbsolute(p: string): boolean {
-		return path.normalize(p + '/') === path.normalize(path.resolve(p) + '/');
-	}
-
 	private fixHref(resource: vscode.Uri, href: string): string {
 		if (!href) {
 			return href;
 		}
 
 		// Use href if it is already an URL
-		if (vscode.Uri.parse(href).scheme) {
-			return href;
+		const hrefUri = vscode.Uri.parse(href);
+		if (['file', 'http', 'https'].indexOf(hrefUri.scheme) >= 0) {
+			return hrefUri.toString();
 		}
 
 		// Use href as file URI if it is absolute
-		if (this.isAbsolute(href)) {
+		if (path.isAbsolute(href)) {
 			return vscode.Uri.file(href).toString();
 		}
 
@@ -89,7 +86,7 @@ export class MDDocumentContentProvider implements vscode.TextDocumentContentProv
 	}
 
 	private computeCustomStyleSheetIncludes(uri: vscode.Uri): string {
-		const styles = vscode.workspace.getConfiguration('markdown')['styles'];
+		const styles: string[] = vscode.workspace.getConfiguration('markdown')['styles'];
 		if (styles && Array.isArray(styles) && styles.length > 0) {
 			return styles.map((style) => {
 				return `<link rel="stylesheet" href="${this.fixHref(uri, style)}" type="text/css" media="screen">`;
