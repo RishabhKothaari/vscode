@@ -493,12 +493,12 @@ export class SearchViewlet extends Viewlet {
 					this.currentSelectedFileMatch = selectedMatch.parent();
 					this.currentSelectedFileMatch.setSelectedMatch(selectedMatch);
 					if (!(options.payload && options.payload.preventEditorOpen)) {
-						this.onFocus(selectedMatch, options.editorOptions.preserveFocus, options.editorOptions.pinned, options.sideBySide);
+						this.onFocus(selectedMatch, options.editorOptions.preserveFocus, options.sideBySide, options.editorOptions.pinned);
 					}
 				}
 			}));
 
-			this.toUnbind.push(this.tree.addListener2('focus', (event: any) => {
+			this.toUnbind.push(this.tree.addListener('focus', (event: any) => {
 				const focus = this.tree.getFocus();
 				this.firstMatchFocussed.set(this.tree.getNavigator().first() === this.tree.getFocus());
 				this.fileMatchOrMatchFocussed.set(true);
